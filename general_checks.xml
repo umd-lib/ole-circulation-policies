@@ -1,0 +1,68 @@
+<agendas>
+  <agenda> <!--General Checks: rules to validate Patron (generalBlock, expiration date, address, barcode, and, if proxy, a rule for proxy expiration date check-->
+    <name>General Checks</name>
+    <rules>
+      <!--if expirationDate is past then error with permission -->
+      <rule>  
+        <name>PastExpirationDate</name>
+        <oleProposition>
+          <type>simple</type>
+          <simpleProposition>
+            <function>currentDateFunction</function>
+            <term>
+              <type>java.util.Date</type>
+              <value>expirationDate</value>
+            </term>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions>  <!--then display error message-->
+          <action>
+            <name>errorsAndPermission</name>
+            <parameter>
+              <name>errorMessage</name>
+              <value>This patron’s record has expired. Do you want to continue?</value>
+            </parameter>
+            <parameter>
+              <name>permissionName</name>
+              <value>Patron record expired</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+
+      <!--GeneralBlock: if generalBlock=true then display error message-->
+      <rule>
+        <name>isGeneralBlock</name>
+        <oleProposition> <!--if generalBlock=true-->
+          <type>simple</type>
+          <simpleProposition>
+            <term>
+              <type>java.lang.String</type>
+              <value>generalBlock</value>
+            </term>
+            <operator>=</operator>
+            <values>
+              <value>
+                <type>java.lang.String</type>
+                <name>true</name>
+              </value>
+            </values>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions> <!--then display error message-->
+          <action>
+            <name>errorsAndPermission</name>
+            <parameter>
+              <name>errorMessage</name>
+              <value>This patron has a general block</value>
+            </parameter>
+            <parameter>
+              <name>permissionName</name>
+              <value>Patron has a general block</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+    </rules>
+  </agenda>
+</agendas>

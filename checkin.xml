@@ -1,0 +1,212 @@
+<agendas>
+  <agenda> <!--Check-in: rules to validate Item; barcode check; checks based on item status (in transit; intransit for hold; intransit for staff request) and setting new status; checks for requests against the item and setting new statuses; Contains sub rules for check in policies based on combined characteristics of item and patron; Policies set "lost" and overdue penalties-->
+    <name>Check-in Validation</name>
+    <rules>
+      <rule> <!--InTransitCheck; if containsFunction(itemlocation, operatorsCirculationLocation), then (if itemstatus in (intransit), then itemstatus = AVAILABLE, else (if shelvingLagTime > 0, then updateItemStatus=Recently-Returned, Else updateItemStatus = Available)), else updateItemStatus = INTRANSIT-->
+        <name>InTransitCheck</name>
+        <oleProposition> <!--if containsFunction(itemlocation, operatorsCirculationLocation)-->
+          <type>simple</type>
+          <simpleProposition>
+            <function>containsFunction</function>
+            <term>
+              <type>java.lang.String</type>
+              <value>itemLocation</value>
+            </term>
+            <term>
+              <type>java.lang.String</type>
+              <value>operatorsCirculationLocation</value>
+            </term>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions> <!--then (run rule Recently returned Check based on inTransit: if shelvingLagTime > 0, then updateItemStatus=Recently-Returned, Else  updateItemStatus = Available)-->
+          <rule> <!--Recently returned Check based on inTransit: if shelvingLagTime > 0, then updateItemStatus=Recently-Returned, Else updateItemStatus = Available-->
+            <name>Recently returned Check based on inTransit</name>
+            <oleProposition> <!--if shelvingLagTime > 0-->
+              <type>simple</type>
+              <simpleProposition>
+                <term>
+                  <type>java.lang.Integer</type>
+                  <value>shelvingLagTime</value>
+                </term>
+                <operator>greaterThan</operator>
+                <values>
+                  <value>
+                    <type>java.lang.Integer</type>
+                    <name>0</name>
+                  </value>
+                </values>
+              </simpleProposition>
+            </oleProposition>
+            <trueActions> <!--then updateItemStatus=Recently-Returned-->
+              <action>
+                <name>updateItemStatus</name>
+                <parameter>
+                  <name>updateItemStatus</name>
+                  <value>RECENTLY-RETURNED</value>
+                </parameter>
+              </action>
+            </trueActions>
+            <falseActions> <!--else updateItemStatus = Available-->
+              <action>
+                <name>updateItemStatus</name>
+                <parameter>
+                  <name>updateItemStatus</name>
+                  <value>AVAILABLE</value>
+                </parameter>
+              </action>
+            </falseActions>
+          </rule>
+        </trueActions>
+        <falseActions> <!--else updateItemStatus = INTRANSIT-->
+          <action>
+            <name>updateItemStatus</name>
+            <parameter>
+              <name>updateItemStatus</name>
+              <value>INTRANSIT</value>
+            </parameter>
+          </action>
+        </falseActions>
+      </rule>
+      <rule> <!--Circulation Policy Set 1 Validation for CheckIn: set checkinPolicyNotFound to yes, then run through the checkin policy sets; there appears to be only one checkin policy established-->
+        <name>Circulation Policy Set 1 Validation for CheckIn</name>
+        <oleProposition> <!--if circulationPolicyFoundFunction(isCirculationPolicyNotFound)-->
+          <type>simple</type>
+          <simpleProposition>
+            <function>circulationPolicyFoundFunction</function>
+            <term>
+              <type>java.lang.String</type>
+              <value>patronId</value>
+            </term>
+            <term>
+              <type>java.lang.String</type>
+              <value>itemId</value>
+            </term>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions> <!--run rule "Check in Circulation Policy Set 1"-->
+          <rule> <!--Check in Circulation Policy Set 1: validates combination of item type, borrower type and item location, independent of the circdesk coverage and sets itemstatus, replacementbill if lost,and overdue and Max fines-->
+            <name>Check in Circulation Policy Set 1</name>
+            <oleProposition> <!--check borrowerType, itemType, and itemLibrary-->
+              <type>compound</type>
+              <compoundProposition>
+                <operator>AND</operator>
+                <simpleProposition> <!--if borrower in (Undergrad, Grad)-->
+                  <term>
+                    <type>java.lang.String</type>
+                    <value>borrowerType</value>
+                  </term>
+                  <operator>IN</operator>
+                  <values>
+                    <value>
+                      <type>java.lang.String</type>
+                      <name>FAC</name>
+                    </value>
+                    <value>
+                      <type>java.lang.String</type>
+                      <name>STAFF</name>
+                    </value>
+                  </values>
+                </simpleProposition>
+                <simpleProposition> <!--If item in (stks, MAGAZINE)-->
+                  <term>
+                    <type>java.lang.String</type>
+                    <value>itemType</value>
+                  </term>
+                  <operator>IN</operator>
+                  <values>
+                    <value>
+                      <type>java.lang.String</type>
+                      <name>01</name>
+                    </value>
+                  </values>
+                </simpleProposition>
+              </compoundProposition>
+            </oleProposition>
+            <trueActions>
+              <action> <!--then circulationPolicyFound = true-->
+                <name>circulationPolicyFound</name>
+                <parameter>
+                  <name>circulationPolicyFound</name>
+                  <value>true</value>
+                </parameter>
+              </action>
+              <rule> <!--OverdueFineCalc; if today>=duedate, then itemstatus=Available AND (if requesttype=*recall*, then overduefine=20/H and MaxFine=100, else overduefine=10/H and MaxFine=100)-->
+                <name>OverdueFineCalculation</name>
+                <oleProposition> <!--if today (I think) =itemDueDate-->
+                  <type>compound</type>
+                  <compoundProposition>
+                    <operator>AND</operator>
+                    <simpleProposition>
+                      <function>currentDateFunction</function>
+                      <term>
+                        <type>java.util.Date</type>
+                        <value>itemDueDate</value>
+                      </term>
+                    </simpleProposition>
+                    <simpleProposition>
+                      <term>
+                        <type>java.lang.boolean</type>
+                        <value>claimsReturnedFlag</value>
+                      </term>
+                      <operator>=</operator>
+                      <values>
+                        <value>
+                          <type>java.lang.boolean</type>
+                          <name>false</name>
+                        </value>
+                      </values>
+                    </simpleProposition>
+                  </compoundProposition>
+                </oleProposition>
+                <trueActions>
+                  <action> <!--overduefine=50 cents/D-->
+                    <name>overdueFine</name>
+                    <parameter>
+                      <name>overdueFine</name>
+                      <value>0.50/D</value>
+                    </parameter>
+                  </action>
+                  <action> <!--MaxFine=100 dollars-->
+                    <name>maxFine</name>
+                    <parameter>
+                      <name>maxFine</name>
+                      <value>100</value>
+                    </parameter>
+                  </action>
+                </trueActions>
+              </rule>
+            </trueActions>
+          </rule>
+        </trueActions>
+      </rule>
+      
+      <!--Checkin Policy not found; if isCircPolicyNotFound, then send a message-->
+      <rule>
+        <name>Check in Circulation Policy Not Found</name>
+        <oleProposition>
+          <type>simple</type>
+          <simpleProposition>
+            <function>circulationPolicyFoundFunction</function>
+            <term>
+              <type>java.lang.String</type>
+              <value>patronId</value>
+            </term>
+            <term>
+              <type>java.lang.String</type>
+              <value>itemId</value>
+            </term>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions>
+          <action>
+            <name>errorAction</name>
+            <parameter>
+              <name>errorMessage</name>
+              <value>There is no circulation rule for this combination.</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+    </rules>
+  </agenda>
+</agendas>

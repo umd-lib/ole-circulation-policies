@@ -1,0 +1,171 @@
+<agendas>
+  <agenda> <!--CheckOut Validation: rules to validate Item: loaned and lost statuses, Barcode, item location compared to circdesk locations. Contains sub rules for 3 check out policies based on combinations of Item and Patron characteristics; Policies set loan periods, and checks for existing 'claims', fines, limits on # of items checked out, and overdue-->
+    <name>CheckOut Validation</name>
+    <rules>
+      <rule> <!--Circulation Policy Set 1 Validation: if circpolicyFound = isCircPolicyNotFound, then run the policy rules-->
+        <name>Circulation Policy Set 1 Validation</name>
+        <oleProposition> <!--if circpolicyFound = isCircPolicyNotFound-->
+          <type>simple</type>
+          <simpleProposition>
+            <function>circulationPolicyFoundFunction</function>
+            <term>
+              <type>java.lang.String</type>
+              <value>patronId</value>
+            </term>
+            <term>
+              <type>java.lang.String</type>
+              <value>itemId</value>
+            </term>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions>
+          <rule> <!--Check out Circulation Policy Set 1: if specified borrowerTypes, itemTypes, and itemLibraryLocation, then policyFound=true, AND loan period=10-D, AND overdueDay=30 AND recallOverDueDay=25 AND runs checks on checkClaimsReturned, overdueFineAmt, replacementOverdueFineAmt, overallCharges, limitOnCheckedOutItems, limitOnBorrowerOverdueItems, limitOnOverdueRecalledItems AND for each display appropriate errors -->
+            <name>Check out Circulation Policy Set 1</name>
+              <!-- (USER: [FACULTY OR STAFF], ITEM: 01) = fixedDueDate --> 
+            <oleProposition> <!--check borrowerType, itemType, and itemLibrary-->
+              <type>compound</type>
+              <compoundProposition>
+                <operator>AND</operator>
+                <simpleProposition> <!--if borrower in (FAC, STAFF)-->
+                  <term>
+                    <type>java.lang.String</type>
+                    <value>borrowerType</value>
+                  </term>
+                  <operator>IN</operator>
+                  <values>
+                    <value>
+                      <type>java.lang.String</type>
+                      <name>FAC</name>
+                    </value>
+                    <value>
+                      <type>java.lang.String</type>
+                      <name>STAFF</name>
+                    </value>
+                  </values>
+                </simpleProposition>
+                <simpleProposition> <!--If item in (01)-->
+                  <term>
+                    <type>java.lang.String</type>
+                    <value>itemType</value>
+                  </term>
+                  <operator>IN</operator>
+                  <values>
+                    <value>
+                      <type>java.lang.String</type>
+                      <name>01</name>
+                    </value>
+                  </values>
+                </simpleProposition>
+              </compoundProposition>
+            </oleProposition>
+            <trueActions>
+              <action> <!--then policyfound = true-->
+                <name>circulationPolicyFound</name>
+                <parameter>
+                  <name>circulationPolicyFound</name>
+                  <value>true</value>
+                </parameter>
+              </action>
+              <action> <!--then loanPeriod=fixedDueDate-->
+                <name>loanPeriod</name>
+                <parameter>
+                  <name>loanPeriod</name>
+                  <value>fixedDueDate</value>
+                </parameter>
+              </action>
+              <action> <!--then overdueDay=1 -->
+                <name>overdueDay</name>
+                <parameter>
+                  <name>overdueDay</name>
+                  <value>1</value>
+                </parameter>
+              </action>
+              <action> <!--then recallOverdueDay=1-->
+                <name>recallOverdueDay</name>
+                <parameter>
+                  <name>recallOverdueDay</name>
+                  <value>1</value>
+                </parameter>
+              </action>
+            </trueActions>
+          </rule>
+        </trueActions>
+      </rule>
+      
+      <!-- Non-circulating items policy -->
+      <rule> <!--Check out Circulation Policy Set 1: if specified borrowerTypes, itemTypes, and itemLibraryLocation, then policyFound=true, AND loan period=10-D, AND overdueDay=30 AND recallOverDueDay=25 AND runs checks on checkClaimsReturned, overdueFineAmt, replacementOverdueFineAmt, overallCharges, limitOnCheckedOutItems, limitOnBorrowerOverdueItems, limitOnOverdueRecalledItems AND for each display appropriate errors -->
+        <name>Non-circulating item policy 1</name>
+          <!-- (ITEM: 03) = Does not circulate --> 
+          <oleProposition>
+            <type>simple</type>
+            <simpleProposition> <!--If item in (03)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>03</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </oleProposition>
+          <trueActions>
+            <action> <!--then policyfound = true-->
+              <name>circulationPolicyFound</name>
+              <parameter>
+                <name>circulationPolicyFound</name>
+                <value>true</value>
+              </parameter>
+            </action>
+            <action>
+              <name>errorsAndPermission</name>
+              <parameter>
+                <name>errorMessage</name>
+                <value>This item does not circulate.</value>
+              </parameter>
+              <parameter>
+                <name>permissionName</name>
+                <value>Item does not circulate</value>
+              </parameter>
+            </action>
+          </trueActions>
+        </rule>
+
+      <!--if none of the above policies fit combination of item and patron, display the policy not found message-->
+      <rule>
+        <name>Check out Circulation Policy Not Found</name>
+        <oleProposition>
+          <type>simple</type>
+          <simpleProposition>
+            <function>circulationPolicyFoundFunction</function>
+            <term>
+              <type>java.lang.String</type>
+              <value>patronId</value>
+            </term>
+            <term>
+              <type>java.lang.String</type>
+              <value>itemId</value>
+            </term>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions>
+          <action>
+            <name>errorsAndPermission</name>
+            <parameter>
+              <name>errorMessage</name>
+              <value>There is no circulation rule for this combination.&lt;br&gt;
+                     Please notify CLAS with Patron barcode and Item barcode so this problem can be addressed.</value>
+            </parameter>
+            <parameter>
+              <name>permissionName</name>
+              <value>Circulation policy not found</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+    </rules>
+  </agenda>
+</agendas>
