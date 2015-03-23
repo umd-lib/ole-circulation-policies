@@ -73,6 +73,74 @@
         </trueActions>
       </rule>
       
+      <!--[UGRAD], Item Type: 01 = 56 day loan perion -->
+      <rule>
+        <name>Check out Circulation Policy Set 2</name>
+        <oleProposition>
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if borrower in (UGRAD)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>borrowerType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>UGRAD</name>
+                </value>
+              </values>
+            </simpleProposition>
+            <simpleProposition> <!--If item in (01)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>01</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
+        </oleProposition>
+        <trueActions>
+          <action> <!--then policyfound = true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <action> <!--then loanPeriod=56 days-->
+            <name>loanPeriod</name>
+            <parameter>
+              <name>loanPeriod</name>
+              <value>56-D</value>
+            </parameter>
+          </action>
+          <action> <!--then overdueDay=1 -->
+            <name>overdueDay</name>
+            <parameter>
+              <name>overdueDay</name>
+              <value>1</value>
+            </parameter>
+          </action>
+          <action> <!--then recallOverdueDay=1-->
+            <name>recallOverdueDay</name>
+            <parameter>
+              <name>recallOverdueDay</name>
+              <value>1</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+
+      
       <!-- Non-circulating items policy -->
       <rule> <!--Non-circulating item policy 1: Item Status 03 should not circulate -->
         <name>Non-circulating item policy 1</name>
