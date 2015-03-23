@@ -73,7 +73,8 @@
         </trueActions>
       </rule>
       
-      <!--[UGRAD], Item Type: 01 = 56 day loan perion -->
+      
+      <!--[UGRAD], Item Type: 01 = 56 day loan period -->
       <rule>
         <name>Check out Circulation Policy Set 2</name>
         <oleProposition>
@@ -139,7 +140,7 @@
           </action>
         </trueActions>
       </rule>
-
+      
       
       <!-- Non-circulating items policy -->
       <rule> <!--Non-circulating item policy 1: Item Status 03 should not circulate -->
