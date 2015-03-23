@@ -1,5 +1,6 @@
 <agendas>
-  <agenda> <!--General Checks: rules to validate Patron (generalBlock, expiration date, address, barcode, and, if proxy, a rule for proxy expiration date check-->
+  <agenda>
+     <!--General Checks: rules to verify Patron is allowed to check out items.-->
     <name>General Checks</name>
     <rules>
       <!--if expirationDate is past then error with permission -->
@@ -15,7 +16,7 @@
             </term>
           </simpleProposition>
         </oleProposition>
-        <trueActions>  <!--then display error message-->
+        <trueActions>
           <action>
             <name>errorsAndPermission</name>
             <parameter>
@@ -30,10 +31,10 @@
         </trueActions>
       </rule>
 
-      <!--GeneralBlock: if generalBlock=true then display error message-->
+      <!--if generalBlock=true then display error message-->
       <rule>
         <name>isGeneralBlock</name>
-        <oleProposition> <!--if generalBlock=true-->
+        <oleProposition>
           <type>simple</type>
           <simpleProposition>
             <term>
@@ -49,7 +50,7 @@
             </values>
           </simpleProposition>
         </oleProposition>
-        <trueActions> <!--then display error message-->
+        <trueActions>
           <action>
             <name>errorsAndPermission</name>
             <parameter>
