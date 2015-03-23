@@ -4,7 +4,7 @@
     <rules>
       <!--[FACULTY OR STAFF], Item Type: 01 = fixedDueDate -->
       <rule>
-        <name>Check out Circulation Policy Set 1</name>
+        <name>FIXED_DUE_DATE_FAC_STAFF_01</name>
         <oleProposition>
           <type>compound</type>
           <compoundProposition>
@@ -141,6 +141,74 @@
         </trueActions>
       </rule>
       
+      
+      <!--[GRAD], Item Type: 01 = fixedDueDate -->
+      <rule>
+        <name>FIXED_DUE_DATE_GRAD_01</name>
+        <oleProposition>
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if borrower in (GRAD)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>borrowerType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>GRAD</name>
+                </value>
+              </values>
+            </simpleProposition>
+            <simpleProposition> <!--If item in (01)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>01</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
+        </oleProposition>
+        <trueActions>
+          <action> <!--then policyfound = true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <action> <!--then loanPeriod=56 days-->
+            <name>loanPeriod</name>
+            <parameter>
+              <name>loanPeriod</name>
+              <value>fixedDueDate</value>
+            </parameter>
+          </action>
+          <action> <!--then overdueDay=1 -->
+            <name>overdueDay</name>
+            <parameter>
+              <name>overdueDay</name>
+              <value>1</value>
+            </parameter>
+          </action>
+          <action> <!--then recallOverdueDay=1-->
+            <name>recallOverdueDay</name>
+            <parameter>
+              <name>recallOverdueDay</name>
+              <value>1</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+
       
       <!-- Non-circulating items policy -->
       <rule> <!--Non-circulating item policy 1: Item Status 03 should not circulate -->
