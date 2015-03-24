@@ -4,7 +4,7 @@
     <rules>
       <!--[FACULTY OR STAFF], Item Type: 01 = fixedDueDate -->
       <rule>
-        <name>FIXED_DUE_DATE_FAC_STAFF_01</name>
+        <name>CHECKOUT_FIXED_DUE_DATE_FAC_STAFF_01</name>
         <oleProposition>
           <type>compound</type>
           <compoundProposition>
@@ -76,7 +76,7 @@
       
       <!--[UGRAD], Item Type: 01 = 56 day loan period -->
       <rule>
-        <name>UGRAD_01</name>
+        <name>CHECKOUT_UGRAD_01</name>
         <oleProposition>
           <type>compound</type>
           <compoundProposition>
@@ -144,7 +144,7 @@
       
       <!--[GRAD], Item Type: 01 = fixedDueDate -->
       <rule>
-        <name>FIXED_DUE_DATE_GRAD_01</name>
+        <name>CHECKOUT_FIXED_DUE_DATE_GRAD_01</name>
         <oleProposition>
           <type>compound</type>
           <compoundProposition>
@@ -212,7 +212,7 @@
       
       <!-- Non-circulating items policy -->
       <rule> <!--Non-circulating item policy 1: Item Status 03 should not circulate -->
-        <name>NONCIRC_03</name>
+        <name>CHECKOUT_NONCIRC_03</name>
           <!-- (ITEM: 03) = Does not circulate --> 
           <oleProposition>
             <type>simple</type>
@@ -255,7 +255,7 @@
 
       <!--[FACULTY OR STAFF], Item Type: 65 = NoLoan -->
       <rule>
-        <name>FAC_STAFF_65</name>
+        <name>CHECKOUT_FAC_STAFF_65</name>
         <oleProposition>
           <type>compound</type>
           <compoundProposition>
@@ -317,7 +317,7 @@
 
       <!--[UGRAD OR GRAD], Item Type: 65 = 2 hour loan period -->
       <rule>
-        <name>UGRAD_GRAD_65</name>
+        <name>CHECKOUT_UGRAD_GRAD_65</name>
         <oleProposition>
           <type>compound</type>
           <compoundProposition>
@@ -389,7 +389,7 @@
       
       <!--if none of the above policies fit combination of item and patron, display the policy not found message-->
       <rule>
-        <name>Check out Circulation Policy Not Found</name>
+        <name>CHECKOUT_CIRC_POLICY_NOT_FOUND</name>
         <oleProposition>
           <type>simple</type>
           <simpleProposition>
