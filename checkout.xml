@@ -313,8 +313,80 @@
           </action>
         </trueActions>
       </rule>
+      
 
+      <!--[UGRAD OR GRAD], Item Type: 65 = 2 hour loan period -->
+      <rule>
+        <name>UGRAD_GRAD_65</name>
+        <oleProposition>
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if borrower in (UGRAD, GRAD)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>borrowerType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>UGRAD</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>GRAD</name>
+                </value>
+              </values>
+            </simpleProposition>
+            <simpleProposition> <!--If item in (65)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>65</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
+        </oleProposition>
+        <trueActions>
+          <action> <!--then policyfound = true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <action> <!--then loanPeriod=56 days-->
+            <name>loanPeriod</name>
+            <parameter>
+              <name>loanPeriod</name>
+              <value>2-H</value>
+            </parameter>
+          </action>
+          <action> <!--then overdueDay=1 -->
+            <name>overdueDay</name>
+            <parameter>
+              <name>overdueDay</name>
+              <value>1</value>
+            </parameter>
+          </action>
+          <action> <!--then recallOverdueDay=1-->
+            <name>recallOverdueDay</name>
+            <parameter>
+              <name>recallOverdueDay</name>
+              <value>1</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
 
+      
       <!--if none of the above policies fit combination of item and patron, display the policy not found message-->
       <rule>
         <name>Check out Circulation Policy Not Found</name>
