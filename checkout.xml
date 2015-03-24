@@ -76,7 +76,7 @@
       
       <!--[UGRAD], Item Type: 01 = 56 day loan period -->
       <rule>
-        <name>Check out Circulation Policy Set 2</name>
+        <name>UGRAD_01</name>
         <oleProposition>
           <type>compound</type>
           <compoundProposition>
@@ -212,7 +212,7 @@
       
       <!-- Non-circulating items policy -->
       <rule> <!--Non-circulating item policy 1: Item Status 03 should not circulate -->
-        <name>Non-circulating item policy 1</name>
+        <name>NONCIRC_03</name>
           <!-- (ITEM: 03) = Does not circulate --> 
           <oleProposition>
             <type>simple</type>
@@ -251,6 +251,69 @@
             </action>
           </trueActions>
       </rule>
+
+
+      <!--[FACULTY OR STAFF], Item Type: 65 = NoLoan -->
+      <rule>
+        <name>FAC_STAFF_65</name>
+        <oleProposition>
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if borrower in (FAC, STAFF)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>borrowerType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>FAC</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>STAFF</name>
+                </value>
+              </values>
+            </simpleProposition>
+            <simpleProposition> <!--If item in (01)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>65</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
+        </oleProposition>
+        <trueActions>
+          <action> <!--then policyfound = true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <action>
+            <name>errorsAndPermission</name>
+            <parameter>
+              <name>errorMessage</name>
+              <value>This patron type is not allowed to checkout items of this type.</value>
+            </parameter>
+            <parameter>
+              <name>permissionName</name>
+              <value>Patron type not allowed to borrow item type</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+
 
       <!--if none of the above policies fit combination of item and patron, display the policy not found message-->
       <rule>
