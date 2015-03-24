@@ -5,7 +5,7 @@
     <rules>
       <!--if expirationDate is past then error with permission -->
       <rule>  
-        <name>PastExpirationDate</name>
+        <name>GENERAL_PAST_EXPIRATION_DATE</name>
         <oleProposition>
           <type>simple</type>
           <simpleProposition>
@@ -33,7 +33,7 @@
 
       <!--if generalBlock=true then display error message-->
       <rule>
-        <name>isGeneralBlock</name>
+        <name>GENERAL_GENERAL_BLOCK</name>
         <oleProposition>
           <type>simple</type>
           <simpleProposition>
