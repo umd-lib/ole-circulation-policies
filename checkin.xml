@@ -67,119 +67,240 @@
           </action>
         </falseActions>
       </rule>
-      <rule> <!--Circulation Policy Set 1 Validation for CheckIn: set checkinPolicyNotFound to yes, then run through the checkin policy sets; there appears to be only one checkin policy established-->
-        <name>Circulation Policy Set 1 Validation for CheckIn</name>
-        <oleProposition> <!--if circulationPolicyFoundFunction(isCirculationPolicyNotFound)-->
-          <type>simple</type>
-          <simpleProposition>
-            <function>circulationPolicyFoundFunction</function>
-            <term>
-              <type>java.lang.String</type>
-              <value>patronId</value>
-            </term>
-            <term>
-              <type>java.lang.String</type>
-              <value>itemId</value>
-            </term>
-          </simpleProposition>
+      
+      
+      <!--[FACULTY OR STAFF], Item Type: [01, 03] -->
+      <rule>
+        <name>CHECKIN_FAC_STAFF_01_03</name>
+        <oleProposition> <!--check borrowerType, itemType, and itemLibrary-->
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if borrower in (FAC, STAFF)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>borrowerType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>FAC</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>STAFF</name>
+                </value>
+              </values>
+            </simpleProposition>
+            <simpleProposition> <!--If item in (01, 03)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>01</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>03</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
         </oleProposition>
-        <trueActions> <!--run rule "Check in Circulation Policy Set 1"-->
-          <rule> <!--Check in Circulation Policy Set 1: validates combination of item type, borrower type and item location, independent of the circdesk coverage and sets itemstatus, replacementbill if lost,and overdue and Max fines-->
-            <name>Check in Circulation Policy Set 1</name>
-            <oleProposition> <!--check borrowerType, itemType, and itemLibrary-->
+        <trueActions>
+          <action> <!--then circulationPolicyFound = true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <!-- No fines, so do nothing -->
+        </trueActions>
+      </rule>
+      
+      
+      <!--[UGRAD OR GRAD], Item Type: [01, 03] -->
+      <rule>
+        <name>CHECKIN_UGRAD_GRAD_01_03</name>
+        <oleProposition> <!--check borrowerType, itemType, and itemLibrary-->
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if borrower in (UGRAD, GRAD)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>borrowerType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>UGRAD</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>STAFF</name>
+                </value>
+              </values>
+            </simpleProposition>
+            <simpleProposition> <!--If item in (01, 03)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>01</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>03</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
+        </oleProposition>
+        <trueActions>
+          <action> <!--then circulationPolicyFound = true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <rule>
+            <name>OverdueFineCalculation</name>
+            <oleProposition> <!--if today (I think) =itemDueDate-->
               <type>compound</type>
               <compoundProposition>
                 <operator>AND</operator>
-                <simpleProposition> <!--if borrower in (Undergrad, Grad)-->
+                <simpleProposition>
+                  <function>currentDateFunction</function>
                   <term>
-                    <type>java.lang.String</type>
-                    <value>borrowerType</value>
+                    <type>java.util.Date</type>
+                    <value>itemDueDate</value>
                   </term>
-                  <operator>IN</operator>
-                  <values>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>FAC</name>
-                    </value>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>STAFF</name>
-                    </value>
-                  </values>
                 </simpleProposition>
-                <simpleProposition> <!--If item in (stks, MAGAZINE)-->
+                <simpleProposition>
                   <term>
-                    <type>java.lang.String</type>
-                    <value>itemType</value>
+                    <type>java.lang.boolean</type>
+                    <value>claimsReturnedFlag</value>
                   </term>
-                  <operator>IN</operator>
+                  <operator>=</operator>
                   <values>
                     <value>
-                      <type>java.lang.String</type>
-                      <name>01</name>
+                      <type>java.lang.boolean</type>
+                      <name>false</name>
                     </value>
                   </values>
                 </simpleProposition>
               </compoundProposition>
             </oleProposition>
             <trueActions>
-              <action> <!--then circulationPolicyFound = true-->
-                <name>circulationPolicyFound</name>
+              <action> <!--overduefine=50 cents/D-->
+                <name>overdueFine</name>
                 <parameter>
-                  <name>circulationPolicyFound</name>
-                  <value>true</value>
+                  <name>overdueFine</name>
+                  <value>0.50/D</value>
                 </parameter>
               </action>
-              <rule> <!--OverdueFineCalc; if today>=duedate, then itemstatus=Available AND (if requesttype=*recall*, then overduefine=20/H and MaxFine=100, else overduefine=10/H and MaxFine=100)-->
-                <name>OverdueFineCalculation</name>
-                <oleProposition> <!--if today (I think) =itemDueDate-->
-                  <type>compound</type>
-                  <compoundProposition>
-                    <operator>AND</operator>
-                    <simpleProposition>
-                      <function>currentDateFunction</function>
-                      <term>
-                        <type>java.util.Date</type>
-                        <value>itemDueDate</value>
-                      </term>
-                    </simpleProposition>
-                    <simpleProposition>
-                      <term>
-                        <type>java.lang.boolean</type>
-                        <value>claimsReturnedFlag</value>
-                      </term>
-                      <operator>=</operator>
-                      <values>
-                        <value>
-                          <type>java.lang.boolean</type>
-                          <name>false</name>
-                        </value>
-                      </values>
-                    </simpleProposition>
-                  </compoundProposition>
-                </oleProposition>
-                <trueActions>
-                  <action> <!--overduefine=50 cents/D-->
-                    <name>overdueFine</name>
-                    <parameter>
-                      <name>overdueFine</name>
-                      <value>0.50/D</value>
-                    </parameter>
-                  </action>
-                  <action> <!--MaxFine=100 dollars-->
-                    <name>maxFine</name>
-                    <parameter>
-                      <name>maxFine</name>
-                      <value>100</value>
-                    </parameter>
-                  </action>
-                </trueActions>
-              </rule>
+              <action> <!--MaxFine=100 dollars-->
+                <name>maxFine</name>
+                <parameter>
+                  <name>maxFine</name>
+                  <value>100</value>
+                </parameter>
+              </action>
             </trueActions>
           </rule>
         </trueActions>
       </rule>
       
+      <!--Item Type: [65] -->
+      <rule>
+        <name>CHECKIN_ALL_65</name>
+        <oleProposition> <!--check borrowerType, itemType, and itemLibrary-->
+          <type>simple</type>
+          <simpleProposition> <!--If item in (65)-->
+            <term>
+              <type>java.lang.String</type>
+              <value>itemType</value>
+            </term>
+            <operator>IN</operator>
+            <values>
+              <value>
+                <type>java.lang.String</type>
+                <name>65</name>
+              </value>
+            </values>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions>
+          <action> <!--then circulationPolicyFound = true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <rule>
+            <name>OverdueFineCalculation</name>
+            <oleProposition> <!--if today (I think) =itemDueDate-->
+              <type>compound</type>
+              <compoundProposition>
+                <operator>AND</operator>
+                <simpleProposition>
+                  <function>currentDateFunction</function>
+                  <term>
+                    <type>java.util.Date</type>
+                    <value>itemDueDate</value>
+                  </term>
+                </simpleProposition>
+                <simpleProposition>
+                  <term>
+                    <type>java.lang.boolean</type>
+                    <value>claimsReturnedFlag</value>
+                  </term>
+                  <operator>=</operator>
+                  <values>
+                    <value>
+                      <type>java.lang.boolean</type>
+                      <name>false</name>
+                    </value>
+                  </values>
+                </simpleProposition>
+              </compoundProposition>
+            </oleProposition>
+            <trueActions>
+              <action> <!--overduefine=$1/H-->
+                <name>overdueFine</name>
+                <parameter>
+                  <name>overdueFine</name>
+                  <value>1.00/H</value>
+                </parameter>
+              </action>
+              <action> <!--MaxFine=100 dollars-->
+                <name>maxFine</name>
+                <parameter>
+                  <name>maxFine</name>
+                  <value>100</value>
+                </parameter>
+              </action>
+            </trueActions>
+          </rule>
+        </trueActions>
+      </rule>
+
+
+    
       <!--Checkin Policy not found; if isCircPolicyNotFound, then send a message-->
       <rule>
         <name>Check in Circulation Policy Not Found</name>
