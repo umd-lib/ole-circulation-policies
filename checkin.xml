@@ -69,6 +69,274 @@
       </rule>
       
       
+      <rule> <!--OnHoldInPickupLocation: if containsFunction(itemPickupLocation, operatorsCirculationLocation) AND itemStatus in (INTRANSIT-FOR-HOLD) then updateItemStatus to ONHOLD-->
+        <name>OnHoldInPickupLocation</name>
+        <oleProposition> <!--if containsFunction(itemPickupLocation, operatorsCirculationLocation) AND itemStatus in (INTRANSIT-FOR-HOLD)-->
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if containsFunction(itemPickupLocation, operatorsCirculationLocation)-->
+              <function>containsFunction</function>
+              <term>
+                <type>java.lang.String</type>
+                <value>itemPickUpLocation</value>
+              </term>
+              <term>
+                <type>java.lang.String</type>
+                <value>operatorsCirculationLocation</value>
+              </term>
+            </simpleProposition>
+            <simpleProposition> <!--if itemStatus in (INTRANSIT-FOR-HOLD)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemStatus</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>INTRANSIT-FOR-HOLD</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
+        </oleProposition>
+        <trueActions> <!--then updateItemStatus to ONHOLD-->
+          <action>
+            <name>updateItemStatus</name>
+            <parameter>
+              <name>updateItemStatus</name>
+              <value>ONHOLD</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+
+      
+      <rule> <!--(StaffRequest)NotCheckedOut: if containsFunction(destinationLocation), [a circulation desk selected by the staff person and does not need to be a 'pickup location' circdesk] operatorsCirculationLocation) AND itemStatus in (Intransit-Per-Staff-Request), then run rule 'Recently returned Check based on Staff'-->
+        <name>NotCheckedOut</name>
+        <oleProposition> <!--if containsFunction(destinationLocation, operatorsCirculationLocation) AND itemStatus in (Intransit-Per-Staff-Request)-->
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if containsFunction(destinationLocation, operatorsCirculationLocation)-->
+              <function>containsFunction</function>
+              <term>
+                <type>java.lang.String</type>
+                <value>destinationLocation</value>
+              </term>
+              <term>
+                <type>java.lang.String</type>
+                <value>operatorsCirculationLocation</value>
+              </term>
+            </simpleProposition>
+            <simpleProposition> <!--if itemStatus in (Intransit-Per-Staff-Request)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemStatus</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>INTRANSIT-PER-STAFF-REQUEST</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
+        </oleProposition>
+        <trueActions>
+          <rule> <!--Recently returned Check based on staff: if shelvingLagTime > 0, then updateItemStatus = Recently-Returned, else updateItemStatus = Available-->
+            <name>Recently returned Check based on staff</name>
+            <oleProposition> <!--if shelvingLagTime > 0-->
+              <type>simple</type>
+              <simpleProposition>
+                <term>
+                  <type>java.lang.Integer</type>
+                  <value>shelvingLagTime</value>
+                </term>
+                <operator>greaterThan</operator>
+                <values>
+                  <value>
+                    <type>java.lang.Integer</type>
+                    <name>0</name>
+                  </value>
+                </values>
+              </simpleProposition>
+            </oleProposition>
+            <trueActions> <!--then updateItemStatus = Recently-Returned-->
+              <action>
+                <name>updateItemStatus</name>
+                <parameter>
+                  <name>updateItemStatus</name>
+                  <value>RECENTLY-RETURNED</value>
+                </parameter>
+              </action>
+            </trueActions>
+            <falseActions> <!--else updateItemStatus = Available-->
+              <action>
+                <name>updateItemStatus</name>
+                <parameter>
+                  <name>updateItemStatus</name>
+                  <value>AVAILABLE</value>
+                </parameter>
+              </action>
+            </falseActions>
+          </rule>
+        </trueActions>
+      </rule>
+            
+
+      <rule> <!--DeliveryRequest: if requestType in (Recall/Delivery Request, Hold/Delivery Request),then checkout = content for mail-->
+        <name>DeliveryRequest</name>
+        <oleProposition> <!--if requestType in (Recall/Delivery Request, Hold/Delivery Request)-->
+          <type>simple</type>
+          <simpleProposition>
+            <term>
+              <type>java.lang.String</type>
+              <value>requestType</value>
+            </term>
+            <operator>IN</operator>
+            <values>
+              <value>
+                <type>java.lang.String</type>
+                <name>Recall/Delivery Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>Hold/Delivery Request</name>
+              </value>
+            </values>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions> <!--then checkout = content for mail-->
+          <action>
+            <name>checkout</name>
+            <parameter>
+              <name>checkout</name>
+              <value>Content for mail</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+      
+      
+      <rule> <!--Request Exists Check: if requestType in (Recall/Delivery Request, Hold/Delivery Request,Recall/Hold Request,Hold/Hold Request,Page/Hold Request),then display error-->
+        <name>Request Exists Check</name>
+        <oleProposition> <!--if requestType in (Recall/Delivery Request, Hold/Delivery Request,Recall/Hold Request,Hold/Hold Request,Page/Hold Request)-->
+          <type>simple</type>
+          <simpleProposition>
+            <term>
+              <type>java.lang.String</type>
+              <value>requestType</value>
+            </term>
+            <operator>IN</operator>
+            <values>
+              <value>
+                <type>java.lang.String</type>
+                <name>Recall/Delivery Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>Hold/Delivery Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>Recall/Hold Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>Hold/Hold Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>Page/Hold Request</name>
+              </value>
+            </values>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions> <!--then display error-->
+          <action>
+            <name>errorAction</name>
+            <parameter>
+              <name>errorMessage</name>
+              <value>Request Exists for this Item</value>
+            </parameter>
+          </action>
+        </trueActions>
+      </rule>
+      
+      
+      <rule> <!--HoldRequest: if requestType in (Recall/Hold Request, Hold/Hold Request, Page/Hold Request), then run rule LocationCheck-->
+        <name>HoldRequest</name>
+        <oleProposition> <!--if requestType in (Recall/Hold Request, Hold/Hold Request, Page/Hold Request)-->
+          <type>simple</type>
+          <simpleProposition>
+            <term>
+              <type>java.lang.String</type>
+              <value>requestType</value>
+            </term>
+            <operator>IN</operator>
+            <values>
+              <value>
+                <type>java.lang.String</type>
+                <name>Recall/Hold Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>Hold/Hold Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>Page/Hold Request</name>
+              </value>
+              <value>
+                <type>java.lang.String</type>
+                <name>ASR Request</name>
+              </value>
+            </values>
+          </simpleProposition>
+        </oleProposition>
+        <trueActions> <!--run rule LocationCheck-->
+          <rule> <!--if containsFunction(itemPickUpLocation, operatorsCirculationLocation), then updateItemStatus = onhold, else updateItemStatus = Intransit-For-Hold-->
+            <name>LocationCheck</name>
+            <oleProposition> <!--if containsFunction(itemPickUpLocation, operatorsCirculationLocation)-->
+              <type>simple</type>
+              <simpleProposition>
+                <function>containsFunction</function>
+                <term>
+                  <type>java.lang.String</type>
+                  <value>itemPickUpLocation</value>
+                </term>
+                <term>
+                  <type>java.lang.String</type>
+                  <value>operatorsCirculationLocation</value>
+                </term>
+              </simpleProposition>
+            </oleProposition>
+            <trueActions> <!--then updateItemStatus = onhold-->
+              <action>
+                <name>updateItemStatus</name>
+                <parameter>
+                  <name>updateItemStatus</name>
+                  <value>ONHOLD</value>
+                </parameter>
+              </action>
+            </trueActions>
+            <falseActions> <!--else updateItemStatus = Intransit-For-Hold-->
+              <action>
+                <name>updateItemStatus</name>
+                <parameter>
+                  <name>updateItemStatus</name>
+                  <value>INTRANSIT-FOR-HOLD</value>
+                </parameter>
+              </action>
+            </falseActions>
+          </rule>
+        </trueActions>
+      </rule>
+            
+
       <!--[FACULTY OR STAFF], Item Type: [01, 03] -->
       <rule>
         <name>CHECKIN_FAC_STAFF_01_03</name>
