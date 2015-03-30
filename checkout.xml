@@ -56,20 +56,6 @@
               <value>fixedDueDate</value>
             </parameter>
           </action>
-          <action> <!--then overdueDay=1 -->
-            <name>overdueDay</name>
-            <parameter>
-              <name>overdueDay</name>
-              <value>1</value>
-            </parameter>
-          </action>
-          <action> <!--then recallOverdueDay=1-->
-            <name>recallOverdueDay</name>
-            <parameter>
-              <name>recallOverdueDay</name>
-              <value>1</value>
-            </parameter>
-          </action>
         </trueActions>
       </rule>
       
@@ -124,20 +110,6 @@
               <value>56-D</value>
             </parameter>
           </action>
-          <action> <!--then overdueDay=1 -->
-            <name>overdueDay</name>
-            <parameter>
-              <name>overdueDay</name>
-              <value>1</value>
-            </parameter>
-          </action>
-          <action> <!--then recallOverdueDay=1-->
-            <name>recallOverdueDay</name>
-            <parameter>
-              <name>recallOverdueDay</name>
-              <value>1</value>
-            </parameter>
-          </action>
         </trueActions>
       </rule>
       
@@ -190,20 +162,6 @@
             <parameter>
               <name>loanPeriod</name>
               <value>fixedDueDate</value>
-            </parameter>
-          </action>
-          <action> <!--then overdueDay=1 -->
-            <name>overdueDay</name>
-            <parameter>
-              <name>overdueDay</name>
-              <value>1</value>
-            </parameter>
-          </action>
-          <action> <!--then recallOverdueDay=1-->
-            <name>recallOverdueDay</name>
-            <parameter>
-              <name>recallOverdueDay</name>
-              <value>1</value>
             </parameter>
           </action>
         </trueActions>
@@ -367,20 +325,6 @@
             <parameter>
               <name>loanPeriod</name>
               <value>2-H</value>
-            </parameter>
-          </action>
-          <action> <!--then overdueDay=1 -->
-            <name>overdueDay</name>
-            <parameter>
-              <name>overdueDay</name>
-              <value>1</value>
-            </parameter>
-          </action>
-          <action> <!--then recallOverdueDay=1-->
-            <name>recallOverdueDay</name>
-            <parameter>
-              <name>recallOverdueDay</name>
-              <value>1</value>
             </parameter>
           </action>
         </trueActions>
