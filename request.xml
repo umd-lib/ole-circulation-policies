@@ -75,392 +75,81 @@
       
       
       <rule> <!--ValidationRequestPolicySet1:-->
-        <name>Circulation Policy Set 1 Validation for Request</name>
-        <oleProposition> <!--set isCircPolicyNotFound-->
-          <type>simple</type>
-          <simpleProposition>
-            <function>circulationPolicyFoundFunction</function>
-            <term>
-              <type>java.lang.String</type>
-              <value>patronId</value>
-            </term>
-            <term>
-              <type>java.lang.String</type>
-              <value>itemId</value>
-            </term>
-          </simpleProposition>
+        <name>REQUEST_UGRAD_GRAD_FAC_STAFF_01</name>
+        <oleProposition> <!--if borrowerType in (undergrad, grad, faculty, staff) AND itemtype in (01) -->
+          <type>compound</type>
+          <compoundProposition>
+            <operator>AND</operator>
+            <simpleProposition> <!--if borrowerType in (undergrad, grad, faculty, staff)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>borrowerType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>UGRAD</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>GRAD</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>FAC</name>
+                </value>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>STAFF</name>
+                </value>
+              </values>
+            </simpleProposition>
+            <simpleProposition> <!--if itemtype in (01)-->
+              <term>
+                <type>java.lang.String</type>
+                <value>itemType</value>
+              </term>
+              <operator>IN</operator>
+              <values>
+                <value>
+                  <type>java.lang.String</type>
+                  <name>01</name>
+                </value>
+              </values>
+            </simpleProposition>
+          </compoundProposition>
         </oleProposition>
-        <trueActions>  <!--then run the real rules for the policy-->
-          <rule> <!--RequestPolicySet1: if borrowerType in (undergrad, grad, faculty, staff) AND itemtype in (01), then set minimum loan and recall loan periods, run rules to check # of recalls, number of holds, number of Page Requests-->
-            <name>Request Circulation Policy Set 1</name>
-            <oleProposition> <!--if borrowerType in (undergrad, grad, faculty, staff) AND itemtype in (01) -->
-              <type>compound</type>
-              <compoundProposition>
-                <operator>AND</operator>
-                <simpleProposition> <!--if borrowerType in (undergrad, grad, faculty, staff)-->
-                  <term>
-                    <type>java.lang.String</type>
-                    <value>borrowerType</value>
-                  </term>
-                  <operator>IN</operator>
-                  <values>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>UGRAD</name>
-                    </value>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>GRAD</name>
-                    </value>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>FAC</name>
-                    </value>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>STAFF</name>
-                    </value>
-                  </values>
-                </simpleProposition>
-                <simpleProposition> <!--if itemtype in (01)-->
-                  <term>
-                    <type>java.lang.String</type>
-                    <value>itemType</value>
-                  </term>
-                  <operator>IN</operator>
-                  <values>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>01</name>
-                    </value>
-                  </values>
-                </simpleProposition>
-              </compoundProposition>
-            </oleProposition>
-            <trueActions> <!--then circPolicyFound true AND set minimumLoanPeriod=14-D and recallLoanPeriod=14-D AND set requestExpirationDay=30-D AND determine if max# recall, holds and page requests exceeded-->
-              <action> <!--then circPolicyFound true-->
-                <name>circulationPolicyFound</name>
-                <parameter>
-                  <name>circulationPolicyFound</name>
-                  <value>true</value>
-                </parameter>
-              </action>
-              <action> <!--requestExpirationDay: requestExpirationDay=10-->
-                <name>requestExpirationDay</name>
-                <parameter>
-                  <name>requestExpirationDay</name>
-                  <value>30</value>
-                </parameter>
-              </action>
-              <rule> <!--MaxNumberOfRecallRequest: if requestType in (Recall/Hold, Recall/Deliver) AND maxNumberOfRecallRequest > 2, display message that max number of holds exceeded-->
-                <name>MaxNumberOfRecallRequestAndRecallDueDateCheck</name>
-                <oleProposition> <!--if requestType in (Recall/Hold, Recall/Deliver)-->
-                  <type>simple</type>
-                  <simpleProposition>
-                    <term>
-                      <type>java.lang.String</type>
-                      <value>requestType</value>
-                    </term>
-                    <operator>IN</operator>
-                    <values>
-                      <value>
-                        <type>java.lang.String</type>
-                        <name>Recall/Hold Request</name>
-                      </value>
-                      <value>
-                        <type>java.lang.String</type>
-                        <name>Recall/Delivery Request</name>
-                      </value>
-                    </values>
-                  </simpleProposition>
-                </oleProposition>
-                <trueActions> <!--set recallDueDate=5 and recallLoanPeriod=2-d and run rule checking on max number of recall requests -->
-                  <action> <!--then set recallDueDate=5-d and recallLoanPeriod=2-d-->
-                    <name>recallDueDate</name>
-                    <parameter>
-                      <name>minimumLoanPeriod</name>
-                      <value>1-H</value>
-                    </parameter>
-                    <parameter>
-                      <name>recallLoanPeriod</name>
-                      <value>14-D</value>
-                    </parameter>
-                  </action>
-                  <rule> <!--and run rule MaxNumberOfRecallRequest if > 2 then display error-->
-                    <name>MaxNumberOfRecallRequest</name>
-                    <oleProposition> <!--if maxnumberOfRecallRequest > 2-->
-                      <type>simple</type>
-                      <simpleProposition>
-                        <term>
-                          <type>java.lang.Integer</type>
-                          <value>maxNumberOfRecallRequest</value>
-                        </term>
-                        <operator>greaterThan</operator>
-                        <values>
-                          <value>
-                            <type>java.lang.Integer</type>
-                            <name>2</name>
-                          </value>
-                        </values>
-                      </simpleProposition>
-                    </oleProposition>
-                    <trueActions> <!--display error-->
-                      <action>
-                        <name>errorAction</name>
-                        <parameter>
-                          <name>errorMessage</name>
-                          <value>The item has the Maximum number of Recall Requests (2)</value>
-                        </parameter>
-                      </action>
-                    </trueActions>
-                  </rule>
-                </trueActions>
-              </rule>
-              <rule> <!--MaxNumberOfHoldRequest: if requestType in (Hold/hold, Hold/delivery) AND if maxNumberOfHoldRequest >2, display message that hold requests exceeded-->
-                <name>MaxNumberOfHoldRequest</name>
-                <oleProposition> <!--if requestType in (Hold/hold, Hold/delivery) AND if maxNumberOfHoldRequest >2-->
-                  <type>compound</type>
-                  <compoundProposition>
-                    <operator>AND</operator>
-                    <simpleProposition> <!--if requestType in (Hold/hold, Hold/delivery)-->
-                      <term>
-                        <type>java.lang.String</type>
-                        <value>requestType</value>
-                      </term>
-                      <operator>IN</operator>
-                      <values>
-                        <value>
-                          <type>java.lang.String</type>
-                          <name>Hold/Hold Request</name>
-                        </value>
-                        <value>
-                          <type>java.lang.String</type>
-                          <name>Hold/Delivery Request</name>
-                        </value>
-                      </values>
-                    </simpleProposition>
-                    <simpleProposition> <!--if maxNumberOfHoldRequest >2-->
-                      <term>
-                        <type>java.lang.Integer</type>
-                        <value>maxNumberOfHoldRequest</value>
-                      </term>
-                      <operator>greaterThan</operator>
-                      <values>
-                        <value>
-                          <type>java.lang.Integer</type>
-                          <name>2</name>
-                        </value>
-                      </values>
-                    </simpleProposition>
-                  </compoundProposition>
-                </oleProposition>
-                <trueActions>
-                  <action> <!--display message that hold requests exceeded-->
-                    <name>errorAction</name>
-                    <parameter>
-                      <name>errorMessage</name>
-                      <value>Hold Requests exceeds the maximum (2).</value>
-                    </parameter>
-                  </action>
-                </trueActions>
-              </rule>
-              <rule> <!--MaxNumberOfPageRequest: if requestType in (page/hold, page/delivery) AND if maxNumberOfPageRequest > 2, then display message that max number of page requests exceeded-->
-                <name>MaxNumberOfPageRequest</name>
-                <oleProposition> <!--if requestType in (page/hold, page/delivery) AND if maxNumberOfPageRequest > 2-->
-                  <type>compound</type>
-                  <compoundProposition>
-                    <operator>AND</operator>
-                    <simpleProposition> <!--if requestType in (page/hold, page/delivery)-->
-                      <term>
-                        <type>java.lang.String</type>
-                        <value>requestType</value>
-                      </term>
-                      <operator>IN</operator>
-                      <values>
-                        <value>
-                          <type>java.lang.String</type>
-                          <name>Page/Hold Request</name>
-                        </value>
-                        <value>
-                          <type>java.lang.String</type>
-                          <name>Page/Delivery Request</name>
-                        </value>
-                      </values>
-                    </simpleProposition>
-                    <simpleProposition> <!--if maxNumberOfPageRequest > 2-->
-                      <term>
-                        <type>java.lang.Integer</type>
-                        <value>maxNumberOfPageRequest</value>
-                      </term>
-                      <operator>greaterThan</operator>
-                      <values>
-                        <value>
-                          <type>java.lang.Integer</type>
-                          <name>2</name>
-                        </value>
-                      </values>
-                    </simpleProposition>
-                  </compoundProposition>
-                </oleProposition>
-                <trueActions>
-                  <action> <!--display message that max number of page requests exceeded-->
-                    <name>errorAction</name>
-                    <parameter>
-                      <name>errorMessage</name>
-                      <value>Page requests exceed the maximum (2).</value>
-                    </parameter>
-                  </action>
-                </trueActions>
-              </rule>
-              <rule> <!--MaxNumberOfPageRequest: if requestType in (page/hold, page/delivery) AND if maxNumberOfPageRequest > 2, then display message that max number of page requests exceeded-->
-                <name>MaxNumberOfASRRequest</name>
-                <oleProposition> <!--if requestType in (page/hold, page/delivery) AND if maxNumberOfPageRequest > 2-->
-                  <type>compound</type>
-                  <compoundProposition>
-                    <operator>AND</operator>
-                    <simpleProposition> <!--if requestType in (page/hold, page/delivery)-->
-                      <term>
-                        <type>java.lang.String</type>
-                        <value>requestType</value>
-                      </term>
-                      <operator>IN</operator>
-                      <values>
-                        <value>
-                          <type>java.lang.String</type>
-                          <name>ASR Request</name>
-                        </value>
-                      </values>
-                    </simpleProposition>
-                    <simpleProposition> <!--if maxNumberOfPageRequest > 2-->
-                      <term>
-                        <type>java.lang.Integer</type>
-                        <value>maxNumberOfASRRequest</value>
-                      </term>
-                      <operator>greaterThan</operator>
-                      <values>
-                        <value>
-                          <type>java.lang.Integer</type>
-                          <name>2</name>
-                        </value>
-                      </values>
-                    </simpleProposition>
-                  </compoundProposition>
-                </oleProposition>
-                <trueActions>
-                  <action> <!--display message that max number of page requests exceeded-->
-                    <name>errorAction</name>
-                    <parameter>
-                      <name>errorMessage</name>
-                      <value>ASR Requests exceed the maximum (2).</value>
-                    </parameter>
-                  </action>
-                </trueActions>
-              </rule>
-              <rule> <!--if item has been claims returned-->
-                <name>Claims returned item validation for request1</name>
-                <oleProposition> <!--if circpolicyFound = isCircPolicyNotFound-->
-                  <type>simple</type>
-                  <simpleProposition>
-                    <term>
-                      <type>java.lang.boolean</type>
-                      <value>claimsReturnedFlag</value>
-                    </term>
-                    <operator>=</operator>
-                    <values>
-                      <value>
-                        <type>java.lang.boolean</type>
-                        <name>true</name>
-                      </value>
-                    </values>
-                  </simpleProposition>
-                </oleProposition>
-                <trueActions> <!--then display error-->
-                  <action>
-                    <name>errorAction</name>
-                    <parameter>
-                      <name>errorMessage</name>
-                      <value>Item has been claims returned, so item is temporarily unavailable to raise the request</value>
-                    </parameter>
-                  </action>
-                </trueActions>
-              </rule>
-            </trueActions>
-          </rule>
+        <trueActions> <!--then circPolicyFound true AND set minimumLoanPeriod=14-D and recallLoanPeriod=14-D AND set requestExpirationDay=30-D -->
+          <action> <!--then circPolicyFound true-->
+            <name>circulationPolicyFound</name>
+            <parameter>
+              <name>circulationPolicyFound</name>
+              <value>true</value>
+            </parameter>
+          </action>
+          <action> <!--requestExpirationDay: requestExpirationDay=30-->
+            <name>requestExpirationDay</name>
+            <parameter>
+              <name>requestExpirationDay</name>
+              <value>30</value>
+            </parameter>
+          </action>
+          <action> <!--then set minimumLoanPeriod=14-d and recallLoanPeriod=14-d-->
+            <name>recallDueDate</name>
+            <parameter>
+              <name>minimumLoanPeriod</name>
+              <value>14-D</value>
+            </parameter>
+            <parameter>
+              <name>recallLoanPeriod</name>
+              <value>14-D</value>
+            </parameter>
+          </action>
         </trueActions>
       </rule>
 
       
-      <rule> <!--Test Circulation Policy Set Validation for Request:  This rule 1st checks whether an appropriate circulation policy has been found and if not, checks to see if this is the policy to use-->
-        <name>Test Circulation Policy Set Validation for Request</name>
-        <oleProposition> <!--if circulationPolicyFoundFunction(isCirculationPolicyNotFound)-->
-          <type>simple</type>
-          <simpleProposition>
-            <function>circulationPolicyFoundFunction</function>
-            <term>
-              <type>java.lang.String</type>
-              <value>patronId</value>
-            </term>
-            <term>
-              <type>java.lang.String</type>
-              <value>itemId</value>
-            </term>
-          </simpleProposition>
-        </oleProposition>
-        <trueActions>
-          <rule> <!--Test Circulation Policy Set Validation for Request: if itemType in (PALCI,API) AND itemShelving in (PALCI,API), then circpolicyFound=True -->
-            <name>Test Check out Circulation Policy Set for Request</name>
-            <oleProposition> <!--if  itemType is PALCI or API, is the item's location covered by this policy-->
-              <type>compound</type>
-              <compoundProposition>
-                <operator>AND</operator>
-                <simpleProposition> <!--if itemType in (PALCI,API)-->
-                  <term>
-                    <type>java.lang.String</type>
-                    <value>itemType</value>
-                  </term>
-                  <operator>IN</operator>
-                  <values>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>PALCI</name>
-                    </value>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>API</name>
-                    </value>
-                  </values>
-                </simpleProposition>
-                <simpleProposition> <!-- if itemShelving in (PALCI,API)-->
-                  <term>
-                    <type>java.lang.String</type>
-                    <value>itemShelving</value>
-                  </term>
-                  <operator>IN</operator>
-                  <values>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>PALCI</name>
-                    </value>
-                    <value>
-                      <type>java.lang.String</type>
-                      <name>API</name>
-                    </value>
-                  </values>
-                </simpleProposition>
-              </compoundProposition>
-            </oleProposition>
-            <trueActions>
-              <action> <!--then CircPolicyFound=true-->
-                <name>circulationPolicyFound</name>
-                <parameter>
-                  <name>circulationPolicyFound</name>
-                  <value>true</value>
-                </parameter>
-              </action>
-            </trueActions>
-          </rule>
-        </trueActions>
-      </rule>
       <rule> <!--if isCircPolicyNotFound, display the message-->
         <name>Request Circulation Policy Not Found</name>
         <oleProposition>
