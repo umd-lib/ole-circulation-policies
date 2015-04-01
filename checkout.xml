@@ -2,6 +2,143 @@
   <agenda>
     <name>CheckOut Validation</name>
     <rules>
+
+    
+      <rule> <!--CheckOut Status Validation: if itemStatus=loaned, then display error, Else (if it's onhold for someone else, then display error)-->
+        <name>CheckOut Status Validation</name>
+        <oleProposition> <!--if itemStatus=Loaned-->
+          <type>simple</type>
+          <simpleProposition>
+            <term>
+              <type>java.lang.String</type>
+              <value>itemStatus</value>
+            </term>
+            <operator>=</operator>
+            <values>
+              <value>
+                <type>java.lang.String</type>
+                <name>LOANED</name>
+              </value>
+            </values>
+          </simpleProposition>
+        </oleProposition>
+        <falseActions>
+          <rule> <!--Pending Request And Hold Status Validation: if patron != 1st position and requestType in (any hold or delivery type) then display error patron not in queue position "1" and if the itemstatus=OnHold, then display error 'onhold for someone else'-->
+            <name>Pending Request And Hold Status Validation</name>
+            <oleProposition> <!--if isPatronInPositionOne=false-->
+              <type>simple</type>
+              <simpleProposition> <!--if isPatronInPositionOne=false-->
+                <term>
+                  <type>java.lang.String</type>
+                  <value>isPatronInPositionOne</value>
+                </term>
+                <operator>=</operator>
+                <values>
+                  <value>
+                    <type>java.lang.String</type>
+                    <name>false</name>
+                  </value>
+                </values>
+              </simpleProposition>
+            </oleProposition>
+            <trueActions> <!--then display error patron not in queue position "1"-->
+              <rule> <!--Pending Request Validation: if patron != 1st position and requestType in (any hold or delivery type), then display error patron not in queue position "1"-->
+                <name>Pending Request Validation</name>
+                <oleProposition> <!--if isPatronInPositionOne=false AND requestType in (recall hold or delivery or page hold or delivery or hold/hold)-->
+                  <type>simple</type>
+                  <simpleProposition> <!--if requestType in recall/hold, recall/delivery, page/hold, page/delivery, hold/hold-->
+                    <term>
+                      <type>java.lang.String</type>
+                      <value>requestType</value>
+                    </term>
+                    <operator>IN</operator>
+                    <values>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>Recall/Delivery Request</name>
+                      </value>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>Recall/Hold Request</name>
+                      </value>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>Hold/Delivery Request</name>
+                      </value>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>Hold/Hold Request</name>
+                      </value>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>Page/Hold Request</name>
+                      </value>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>Page/Delivery Request</name>
+                      </value>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>Copy Request</name>
+                      </value>
+                      <value>
+                        <type>java.lang.String</type>
+                        <name>In Transit Request</name>
+                      </value>
+                    </values>
+                  </simpleProposition>
+                </oleProposition>
+                <trueActions> <!--then display error patron not in queue position "1"-->
+                  <action>
+                    <name>errorsAndPermission</name>
+                    <parameter>
+                      <name>errorMessage</name>
+                      <value>Item has pending request queue where patron presenting item is NOT the patron in queue position '1'</value>
+                    </parameter>
+                    <parameter>
+                      <name>permissionName</name>
+                      <value>Item has pending request queue where patron presenting item is NOT the patron in queue position '1'</value>
+                    </parameter>
+                  </action>
+                  <rule> <!--OnHold Status Validation: if itemstatus=OnHold, then display error 'onhold for someone else'-->
+                    <name>OnHold Status Validation</name>
+                    <oleProposition> <!--if itemStatus=OnHold-->
+                      <type>simple</type>
+                      <simpleProposition> <!--if itemStatus=OnHold-->
+                        <term>
+                          <type>java.lang.String</type>
+                          <value>itemStatus</value>
+                        </term>
+                        <operator>=</operator>
+                        <values>
+                          <value>
+                            <type>java.lang.String</type>
+                            <name>ONHOLD</name>
+                          </value>
+                        </values>
+                      </simpleProposition>
+                    </oleProposition>
+                    <trueActions> <!--then display error onhold for another patron-->
+                      <action>
+                        <name>errorsAndPermission</name>
+                        <parameter>
+                          <name>errorMessage</name>
+                          <value>Item has been requested by another patron.</value>
+                        </parameter>
+                        <parameter>
+                          <name>permissionName</name>
+                          <value>Item on hold for another patron</value>
+                        </parameter>
+                      </action>
+                    </trueActions>
+                  </rule>
+                </trueActions>
+              </rule>
+            </trueActions>
+          </rule>
+        </falseActions>
+      </rule>
+
       <!--[FACULTY OR STAFF], Item Type: 01 = fixedDueDate -->
       <rule>
         <name>CHECKOUT_FIXED_DUE_DATE_FAC_STAFF_01</name>
