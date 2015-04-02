@@ -1,0 +1,273 @@
+<agenda> <!--The agenda 'Notice Validation' Contains the policies for notices-->
+  <name>Notice Validation</name>
+  <rules>
+  
+  
+    <rule> <!--NOTICE_FAC_STAFF_UGRAD_GRAD-->
+      <name>NOTICE_FAC_STAFF_UGRAD_GRAD</name>
+      <oleProposition>
+        <type>simple</type>
+        <simpleProposition>
+          <term>
+            <type>java.lang.String</type>
+            <value>borrowerType</value>
+          </term>
+          <operator>IN</operator>
+          <values>
+            <value>
+              <type>java.lang.String</type>
+              <name>UGRAD</name>
+            </value>
+            <value>
+              <type>java.lang.String</type>
+              <name>GRAD</name>
+            </value>
+            <value>
+              <type>java.lang.String</type>
+              <name>FAC</name>
+            </value>
+            <value>
+              <type>java.lang.String</type>
+              <name>STAFF</name>
+            </value>
+          </values>
+        </simpleProposition>
+      </oleProposition>
+      <trueActions>
+        <action> <!--set circulationPolicyFound to true-->
+          <name>circulationPolicyFound</name>
+          <parameter>
+            <name>circulationPolicyFound</name>
+            <value>true</value>
+          </parameter>
+        </action>
+        <rule>  <!--CourtesyNoticeCheck: To enable courtesy Notice Action, make it to true-->
+          <name>Courtesy Notice Check</name>
+          <oleProposition>
+            <type>simple</type>
+            <simpleProposition>
+              <term>
+                <type>java.util.Date</type>
+                <value>itemDueDate</value>
+              </term>
+              <operator>!=</operator>
+              <values>
+                <value>
+                  <type>java.util.Date</type>
+                  <name></name>
+                </value>
+              </values>
+            </simpleProposition>
+          </oleProposition>
+          <trueActions><!-- This Action is for courtesy batch job-->
+            <action>
+              <name>DeliverNotice</name>
+              <parameter>
+                <name>noticeType</name>
+                <value>CourtesyNotice</value>
+              </parameter>
+              <parameter>
+                <name>numberOfOverdueToBeSent</name>
+                <value></value>
+              </parameter>
+              <parameter><!--If intervalToGenerateNotice is mentioned as empty, It will be taken from system parameter-->
+                <name>intervalToGenerateNotice</name>
+                <value>2</value>
+              </parameter>
+              <parameter>
+                <name>replacementBill</name>
+                <value></value>
+              </parameter>
+            </action>
+          </trueActions>
+        </rule>
+        <rule> <!--OverdueNoticeCheck: if (claimsReturned=true And replacementFeePatronBill= false)-->
+          <name>OverdueNotice Check</name>
+          <oleProposition>
+            <type>compound</type>
+            <compoundProposition>
+              <operator>AND</operator>
+              <simpleProposition>
+                <term>
+                  <type>java.util.Date</type>
+                  <value>itemDueDate</value>
+                </term>
+                <operator>!=</operator>
+                <values>
+                  <value>
+                    <type>java.util.Date</type>
+                    <name></name>
+                  </value>
+                </values>
+              </simpleProposition>
+              <simpleProposition> <!--if claimsReturned=true-->
+                <term>
+                  <type>java.lang.String</type>
+                  <value>claimsReturned</value>
+                </term>
+                <operator>=</operator>
+                <values>
+                  <value>
+                    <type>java.lang.String</type>
+                    <name>false</name>
+                  </value>
+                </values>
+              </simpleProposition>
+              <simpleProposition> <!--if replacementFeePatronBill in true-->
+                <term>
+                  <type>java.lang.String</type>
+                  <value>replacementFeePatronBill</value>
+                </term>
+                <operator>=</operator>
+                <values>
+                  <value>
+                    <type>java.lang.String</type>
+                    <name>false</name>
+                  </value>
+                </values>
+              </simpleProposition>
+            </compoundProposition>
+          </oleProposition>
+          <trueActions>
+            <action><!--This Action is for Overdue Batch Job-->
+              <name>DeliverNotice</name>
+              <parameter>
+                <name>noticeType</name>
+                <value>OverdueNotice</value>
+              </parameter>
+              <parameter>
+                <name>numberOfOverdueToBeSent</name>
+                <value>2</value>
+              </parameter>
+              <parameter><!--If intervalToGenerateNotice is mentioned as empty, It will be taken from system parameter-->
+                <name>intervalToGenerateNotice</name>
+                <value>2</value>
+              </parameter>
+              <parameter>
+                <name>replacementBill</name>
+                <value>100</value>
+              </parameter>
+            </action>
+          </trueActions>
+        </rule>
+        <rule> <!--Hold Courtesy Notice Check: if (itemStatus = ONHOLD  AND numberOfDaysOnHold>max#ofDaysOnHold), then generateNotice = HoldCourtesyNotice-->
+          <name>Hold Courtesy Notice Check</name>
+          <oleProposition> <!--if (itemStatus = ONHOLD  AND numberOfDaysOnHold>max#ofDaysOnHold)-->
+            <type>compound</type>
+            <compoundProposition>
+              <operator>AND</operator>
+              <simpleProposition> <!--if itemStatus = ONHOLD-->
+                <term>
+                  <type>java.lang.String</type>
+                  <value>itemStatus</value>
+                </term>
+                <operator>=</operator>
+                <values>
+                  <value>
+                    <type>java.lang.String</type>
+                    <name>ONHOLD</name>
+                  </value>
+                </values>
+              </simpleProposition>
+              <simpleProposition> <!--if numberOfDaysOnHold>max#ofDaysOnHold-->
+                <term>
+                  <type>java.lang.Integer</type>
+                  <value>numberOfDaysOnHold</value>
+                </term>
+                <operator>greaterThan</operator>
+                <term>
+                  <type>java.lang.Integer</type>
+                  <value>maxNumberOfDaysOnHold</value>
+                </term>
+              </simpleProposition>
+            </compoundProposition>
+          </oleProposition>
+          <trueActions>
+            <action> <!--GenerateNotice: then generateNotice = HoldCourtesyNotice-->
+              <name>generateNotice</name>
+              <parameter>
+                <name>generateNotice</name>
+                <value>HoldCourtesyNotice</value>
+              </parameter>
+            </action>
+          </trueActions>
+        </rule>
+      </trueActions>
+    </rule>
+    
+    
+    <rule> <!--Policy Not found-->
+      <name>Notice Circulation Policy Not Found</name>
+      <oleProposition>
+        <type>simple</type>
+        <simpleProposition>
+          <function>circulationPolicyFoundFunction</function>
+          <term>
+            <type>java.lang.String</type>
+            <value>patronId</value>
+          </term>
+          <term>
+            <type>java.lang.String</type>
+            <value>itemId</value>
+          </term>
+        </simpleProposition>
+      </oleProposition>
+      <trueActions>
+        <action>
+          <name>errorAction</name>
+          <parameter>
+            <name>errorMessage</name>
+            <value>There is no circulation rule for this combination.</value>
+          </parameter>
+        </action>
+      </trueActions>
+    </rule>
+    
+    
+    <rule> <!--Notice Type Check:  if borrowerType in (Undergrad, graduate, Faculty) AND deskLocation in (ILXSTACKS, IL-ALEXAND/ILXSTACKS), then determine notice method (email, sms, mail-->
+      <name>NOTICE_FORMAT_FAC_STAFF_UGRAD_GRAD</name>
+      <oleProposition> <!--if borrowerType in (Undergrad, graduate, Faculty) AND deskLocation in (ILXSTACKS, IL-ALEXAND/ILXSTACKS)-->
+        <type>simple</type>
+        <simpleProposition> <!--if borrowerType in (Undergrad, graduate, Faculty)-->
+          <term>
+            <type>java.lang.String</type>
+            <value>borrowerType</value>
+          </term>
+          <operator>IN</operator>
+          <values>
+            <value>
+              <type>java.lang.String</type>
+              <name>UGRAD</name>
+            </value>
+            <value>
+              <type>java.lang.String</type>
+              <name>GRAD</name>
+            </value>
+            <value>
+              <type>java.lang.String</type>
+              <name>FAC</name>
+            </value>
+            <value>
+              <type>java.lang.String</type>
+              <name>STAFF</name>
+            </value>
+          </values>
+        </simpleProposition>
+      </oleProposition>
+      <trueActions>
+        <action> <!--emailForOverdueNotice: if notice=OverdueNotice, set noticeType email and
+        if notice=CourtesyNotice, set noticeType email-->
+          <name>NoticeFormat</name>
+          <parameter>
+            <name>notice</name>
+            <value>OverdueNotice|CourtesyNotice</value>
+          </parameter>
+          <parameter>
+            <name>noticeType</name>
+            <value>email|email</value>
+          </parameter>
+        </action>
+      </trueActions>
+    </rule>
+  </rules>
+</agenda>
