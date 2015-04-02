@@ -21,6 +21,8 @@ This repository contains the following files, each corresponding to a KRMS "agen
 | general_checks.xml | The "General Checks" agenda |
 | checkout.xml  | The "Checkout" agenda, handling loan periods |
 | checkin.xml | The "Checkin" agenda, handling returns |
+| request.xml | The "Request" agenda, handling hold and recall requests |
+| notice.xml | The "Notice" agenda, dealing with courtesy notices |
 
 ## OLE Setup
 
@@ -29,6 +31,16 @@ The following permissions must be added to OLE, in order for certain overrides t
 | Template Namespace | Template Name | Permission Namespace | Permission Name | Granted to Roles |
 | ------------------ | ------------- | -------------------- | --------------- | ---------------- |
 | KUALI | Default | OLE-DLVR | Item does not circulate | OLE-PTRN Super Circulation Supervisor |
+| KUALI | Default | OLE-DLVR | Patron type not allowed to borrow item type | OLE-PTRN Super Circulation Supervisor |
+| KUALI | Default | OLE-DLVR | Circulation policy not found | OLE-PTRN Super Circulation Supervisor |
+
+The following fixed due dates need to be specified:
+
+| Circulation Policy Set | Notes |
+| ---------------------- | ----- |
+| CHECKOUT_FIXED_DUE_DATE_FAC_STAFF_01 | For Faculty or Staff checking out item type 01 |
+| CHECKOUT_FIXED_DUE_DATE_GRAD_01 | For Graduate students checking out item type 01 |
+
 
 ## License
 
