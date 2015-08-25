@@ -1,28 +1,29 @@
 # ole-circulation-policies
-Circulation policy rule files for import into OLE
+Circulation policy rule files for import into OLE.
 
-This repository contains files representing the University of Maryland library circulation policies for use with Kuali OLE.
+This repository contains Drools rules files representing the University of
+Maryland library circulation policies for use with Kuali OLE.
 
-These files are imported into OLE using the "KRMS Builder" link in the "KRMS Admin" section of the "Admin" tab.
+These files can be directly imported into OLE using the "Circulation Policy
+Ingester" in the "Circulation New' section of the "Deliver" tab.
+
+The files can also be added to the /home/ole/kuali/kuali/main/local/olefs-webapp/rules/
+directory. OLE can then be to reload the rules by changing the "LOAD_CIRC_POLICIES_IND"
+parameter to "Y", and then performing a circulation action.
+
+These rules are for OLE v1.6.2 and later. Prior to v1.6.2, the KRMS rules engine
+was used for circulation policies. The University of Maryland KRMS ruleset has
+been moved to the "krms_ruleset" branch.
 
 ##Helpful Resources
 
- * Kuali wiki - https://wiki.kuali.org/display/OLE/Circulation+policies
- * Kuali OLE v1.5.6.1 Default Circulation Policy File - https://svn.kuali.org/repos/ole/tags/ole-1.5.6.1/ole-app/olefs/src/main/resources/org/kuali/ole/deliver/defaultload/DefaultCircPolicies.xml
- * Kuali Rice v2.3.6 KRMS Guide - http://site.kuali.org/rice/2.3.6/reference/html/KRMS_Guide.html 
- * Kuali Rice v2.3.6 Documentation Portal - http://site.kuali.org/rice/2.3.6/reference/html/index.html
+ * https://wiki.kuali.org/display/OLE/Implementing+Library+Circulation+Policies+Using+Drools
 
+ 
 ## File Organization
 
-This repository contains the following files, each corresponding to a KRMS "agenda". This files can be imported into OLE individually.
+Each folder corresponds to a different circulation rule subsets.action.
 
-| Filename  | Notes |
-| --------  |------ |
-| general_checks.xml | The "General Checks" agenda |
-| checkout.xml  | The "Checkout" agenda, handling loan periods |
-| checkin.xml | The "Checkin" agenda, handling returns |
-| request.xml | The "Request" agenda, handling hold and recall requests |
-| notice.xml | The "Notice" agenda, dealing with courtesy notices |
 
 ## OLE Setup
 
