@@ -10,16 +10,16 @@ import org.kuali.ole.deliver.bo.PatronBillPayment
 
 
 
-rule "No Fines for InDef Staff"
+rule "NO_FINES_FAC_STAFF_01_03"
 agenda-group "fine validation"
 activation-group "fine validation"
 when
 
 $b: ItemFineRate()
 
-$i: OleItemRecordForCirc(getItemLibraryLocation() in ("LSC","B-EDUC","B-HPER","DLL","SCL","DOCS"))
+$i: OleItemRecordForCirc(getItemType() in ("01", "03"))
 
-$p: OlePatronDocument(getBorrowerTypeCode() in ("ALUM","AVR","FAC","FACR","GRAD","GUEST","RES,","STAFF","UGRAD"))
+$p: OlePatronDocument(getBorrowerTypeCode() in ("FAC", "STAFF"))
 
 then
 $b.setFineRate(0.00);

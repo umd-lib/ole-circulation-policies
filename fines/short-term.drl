@@ -10,45 +10,35 @@ import org.kuali.ole.deliver.bo.PatronBillPayment
 
 
 
-rule "Recalled items hourly fines "
+rule "FINES_ALL_65"
 agenda-group "fine validation"
 activation-group "fine validation"
 when
 
-$l: OleLoanDocument($r:getOleDeliverRequestBo(),
-null!= $r, $r.getRequestTypeCode() in ("Recall/Delivery Request","Recall/Hold Request"))
-
 $f: ItemFineRate()
 
-$i: OleItemRecordForCirc(getItemType() in ("API","BOOK","AV","AUDIOCD","CURRICULUM"),
-getItemLibraryLocation() in ("LSC","B-EDUC","B-HPER","DLL","SCL","DOCS"))
-
-$p: OlePatronDocument(getBorrowerTypeCode() in ("ALUM","AVR","FAC","FACR","GRAD","GUEST","RES,","STAFF","UGRAD"))
+$i: OleItemRecordForCirc(getItemType() in ("65"))
 
 then
-$f.setFineRate(5.00);
+$f.setFineRate(1.00);
 $f.setMaxFine(100.00);
-$f.setInterval("D"); //Options are H-Hours; D-Days
+$f.setInterval("H"); //Options are H-Hours; D-Days
 
  end
 
- rule "Items hourly fines "
+ rule "FINES_UGRAD_GRAD_01_03"
  agenda-group "fine validation"
  activation-group "fine validation"
  when
 
- $l: OleLoanDocument($r:getOleDeliverRequestBo(), null == $r)
-
  $f: ItemFineRate()
 
- $i: OleItemRecordForCirc(getItemType() in ("res2","res4","res24","res48","res72"),
- getItemLibraryLocation() in ("JRL","JCL","ASR","DLL","Eck","SSAd"))
+ $i: OleItemRecordForCirc(getItemType() in ("01", "03"))
 
- $p: OlePatronDocument(getBorrowerTypeCode() in ("QCOL","QGRAD","QNONDEG","QNONUC","QNONUC25","QSTF,","QOTHER",
- "QUNLIM_ACD","QUNLIM_PHD", "QUNLIM_NONUC","NWU","UIC","ACCESS","QALUM25"))
+ $p: OlePatronDocument(getBorrowerTypeCode() in ("UGRAD","GRAD"))
 
  then
- $f.setFineRate(3.00);
+ $f.setFineRate(0.50);
  $f.setMaxFine(100.00);
  $f.setInterval("D"); //Options are H-Hours; D-Days
 
