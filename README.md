@@ -33,7 +33,6 @@ The following permissions must be added to OLE, in order for certain overrides t
 | ------------------ | ------------- | -------------------- | --------------- | ---------------- |
 | KUALI | Default | OLE-DLVR | Item does not circulate | OLE-PTRN Super Circulation Supervisor |
 | KUALI | Default | OLE-DLVR | Patron type not allowed to borrow item type | OLE-PTRN Super Circulation Supervisor |
-| KUALI | Default | OLE-DLVR | Circulation policy not found | OLE-PTRN Super Circulation Supervisor |
 
 The following fixed due dates need to be specified:
 
