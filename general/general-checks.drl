@@ -10,7 +10,7 @@ import org.kuali.ole.service.OleCirculationPolicyServiceImpl
 import org.kuali.ole.deliver.drools.DroolsConstants
 import org.kuali.ole.deliver.util.DroolsResponse
 
-
+/*
 rule "Is Patron Active"
  agenda-group "general-checks"
  when
@@ -19,6 +19,7 @@ rule "Is Patron Active"
  then
  $d.addErrorMessage("Patron is Inactive");
  end
+*/
 
 rule "Is Patron with General Block"
  agenda-group "general-checks"
@@ -30,6 +31,7 @@ rule "Is Patron with General Block"
  $d.addOverridePermissions(DroolsConstants.GENERAL_BLOCK_PERMISSION);
  end
 
+/*
 rule "Is Patron's address verified"
  agenda-group "general-checks"
  when
@@ -38,6 +40,7 @@ rule "Is Patron's address verified"
  then
  $d.addErrorMessage("Address is not verified");
  end
+*/
 
 rule "Is Patron Expired"
  agenda-group "general-checks"
@@ -49,6 +52,7 @@ rule "Is Patron Expired"
  $d.addOverridePermissions("Patron record expired");
  end
 
+/*
 rule "Activation Date for Patron"
    agenda-group "general-checks"
    when
@@ -58,7 +62,7 @@ rule "Activation Date for Patron"
    $d.addErrorMessage("Patron has an invalid activation date");
     end
 
-
+/*
 rule "Check All Charges"
   agenda-group "general-checks"
   when
@@ -109,7 +113,7 @@ rule "Patron Has Atleast One Item which has been recalled and has exceeded the o
  $d.addErrorMessage("Patron Has Atleast One Item which has been recalled and is overdue");
  //$p.addErrorsAndPermission("Patron has max amount of replacement fees");
  end
-
+*/
 
  function Date today(){
  Date date = new Date(System.currentTimeMillis());
