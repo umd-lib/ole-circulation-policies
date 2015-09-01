@@ -9,7 +9,7 @@ Ingester" in the "Circulation New' section of the "Deliver" tab.
 
 The files can also be added to the /home/ole/kuali/kuali/main/local/olefs-webapp/rules/
 directory. OLE can then be to reload the rules by changing the "LOAD_CIRC_POLICIES_IND"
-parameter to "Y", and then performing a circulation action.
+parameter to "Y", and then performing a circulation action. Some of the .drl files (such as checkout/LoanPeriods.drl) have an associated Excel spreadsheet. The Excel spreadsheet defines the decision table that make up the rules in the associated .drl file. The Excel spreadsheet can be converted into a .drl file using the xls2drl application (See [https://github.com/umd-lib/ole-drools-xls2drl](https://github.com/umd-lib/ole-drools-xls2drl)).
 
 These rules are for OLE v1.6.2 and later. Prior to v1.6.2, the KRMS rules engine
 was used for circulation policies. The University of Maryland KRMS ruleset has

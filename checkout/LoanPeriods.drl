@@ -1,0 +1,174 @@
+package org.kuali.ole.deliver.checkout;
+//generated from Decision Table
+import org.kuali.ole.OLEConstants;
+import org.kuali.ole.deliver.util.NoticeInfo;
+import org.kuali.ole.deliver.bo.OleLoanDocument;
+import org.kuali.ole.deliver.bo.OlePatronDocument;
+import org.kuali.ole.deliver.util.OleItemRecordForCirc;
+import org.kuali.ole.deliver.drools.DroolsConstants;
+import org.kuali.ole.deliver.util.DroolsResponse;
+// rule values at B17, header at B12
+rule "CHECKOUT_FAC_01"
+	// CHECKOUT_FIXED_DUE_DATE_FAC_STAFF_01
+	enabled true
+	salience 65519
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("01"))
+		OlePatronDocument(getBorrowerTypeCode() in ("FAC"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_FIXED_DUE_DATE_FAC_STAFF_01");
+		$loan_document.loanPeriod(OLEConstants.FIXED_DUE_DATE, null);
+		$notice_info.setNoticeType(DroolsConstants.SHORT_TERM_LOANS_NOTICE_CONFIG);
+end
+
+// rule values at B18, header at B12
+rule "CHECKOUT_STAFF_01"
+	// CHECKOUT_FIXED_DUE_DATE_FAC_STAFF_01
+	enabled true
+	salience 65518
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("01"))
+		OlePatronDocument(getBorrowerTypeCode() in ("STAFF"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_FIXED_DUE_DATE_FAC_STAFF_01");
+		$loan_document.loanPeriod(OLEConstants.FIXED_DUE_DATE, null);
+		$notice_info.setNoticeType(DroolsConstants.SHORT_TERM_LOANS_NOTICE_CONFIG);
+end
+
+// rule values at B19, header at B12
+rule "CHECKOUT_GRAD_01"
+	// CHECKOUT_FIXED_DUE_DATE_GRAD_01
+	enabled true
+	salience 65517
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("01"))
+		OlePatronDocument(getBorrowerTypeCode() in ("GRAD"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_FIXED_DUE_DATE_GRAD_01");
+		$loan_document.loanPeriod(OLEConstants.FIXED_DUE_DATE, null);
+		$notice_info.setNoticeType(DroolsConstants.SHORT_TERM_LOANS_NOTICE_CONFIG);
+end
+
+// rule values at B20, header at B12
+rule "CHECKOUT_UGRAD_01"
+	enabled true
+	salience 65516
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("01"))
+		OlePatronDocument(getBorrowerTypeCode() in ("UGRAD"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_UGRAD_01");
+		$loan_document.loanPeriod("84-D", null);
+		$notice_info.setNoticeType(DroolsConstants.SHORT_TERM_LOANS_NOTICE_CONFIG);
+end
+
+// rule values at B21, header at B12
+rule "CHECKOUT_03"
+	enabled true
+	salience 65515
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("03"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_03");
+		$drools_response.addErrorMessage("This item does not circulate.");
+		$drools_response.addOverridePermissions("Item does not circulate");
+end
+
+// rule values at B22, header at B12
+rule "CHECKOUT_FAC_65"
+	enabled true
+	salience 65514
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("65"))
+		OlePatronDocument(getBorrowerTypeCode() in ("FAC"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_FAC_65");
+		$drools_response.addErrorMessage("This patron type is not allowed to checkout items of this type.");
+		$drools_response.addOverridePermissions("Patron type not allowed to borrow item type");
+end
+
+// rule values at B23, header at B12
+rule "CHECKOUT_STAFF_65"
+	enabled true
+	salience 65513
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("65"))
+		OlePatronDocument(getBorrowerTypeCode() in ("STAFF"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_STAFF_65");
+		$drools_response.addErrorMessage("This patron type is not allowed to checkout items of this type.");
+		$drools_response.addOverridePermissions("Patron type not allowed to borrow item type");
+end
+
+// rule values at B24, header at B12
+rule "CHECKOUT_UGRAD_65"
+	enabled true
+	salience 65512
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("65"))
+		OlePatronDocument(getBorrowerTypeCode() in ("UGRAD"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_UGRAD_65");
+		$loan_document.loanPeriod("8-H", null);
+		$notice_info.setNoticeType(DroolsConstants.SHORT_TERM_LOANS_NOTICE_CONFIG);
+end
+
+// rule values at B25, header at B12
+rule "CHECKOUT_GRAD_65"
+	enabled true
+	salience 65511
+	agenda-group "checkout validation"
+	activation-group "checkout validation"
+	when
+		$loan_document: OleLoanDocument(/*any*/)
+		$notice_info: NoticeInfo(/*any*/)
+		$drools_response: DroolsResponse(/*any*/)
+		OleItemRecordForCirc(getItemType() in ("65"))
+		OlePatronDocument(getBorrowerTypeCode() in ("GRAD"))
+	then
+		$loan_document.setCirculationPolicyId("CHECKOUT_GRAD_65");
+		$loan_document.loanPeriod("8-H", null);
+		$notice_info.setNoticeType(DroolsConstants.SHORT_TERM_LOANS_NOTICE_CONFIG);
+end
+
+
